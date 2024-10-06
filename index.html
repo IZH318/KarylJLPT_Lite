@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="kr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>캬루와 함께하는 JLPT</title>
+
+    <!-- Confetti 파일 링크 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="Confetti.js"></script>
+
+    <!-- CSS 파일 링크 추가 -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Confetti 생성 Canvas -->
+    <canvas id="Confetti_Canvas"></canvas>
+
+    <!-- 상장 생성 Canvas -->
+    <canvas id="Certificate_Canvas" style="display: none"></canvas>
+    <img
+      id="Certificate_Image"
+      src="./Certificate.png"
+      alt="Test Image"
+      style="display: none"
+    />
+
+    <!-- 칠판 화면 -->
+    <img
+      id="chalkboardImage"
+      src="./Chalkboard_waifu2x_photo_noise3_scale_tinypng.png"
+      alt="Chalkboard"
+    />
+
+    <!-- 로딩 화면 -->
+    <div id="loading-screen">
+      <img
+        src="./ezgif-1-46f732fb91.webp"
+        alt="로딩 애니메이션"
+        id="loading-image"
+        onerror="this.onerror=null; this.src='./ezgif-1-5a65a95f70.gif';"
+      />
+      <p>필요한 파일 불러오는 중...</p>
+    </div>
+
+    <!-- 메인 화면 좌 하단 캐릭터 -->
+    <div class="partner-image-container">
+      <img
+        src="./asm_partner_01_base.png"
+        alt="Partner Character"
+        class="partner-image"
+        draggable="false"
+      />
+    </div>
+
+    <!-- 메인 화면 메뉴 -->
+    <div class="container" id="menu">
+      <h1 style="color: white">캬루와 함께하는 JLPT</h1>
+      <button onclick="showConfirmation('JLPT N1')">JLPT N1</button>
+      <button onclick="showConfirmation('JLPT N2')">JLPT N2</button>
+      <button onclick="showConfirmation('JLPT N3')">JLPT N3</button>
+      <button onclick="showConfirmation('JLPT N4')">JLPT N4</button>
+      <button onclick="showConfirmation('JLPT N5')">JLPT N5</button>
+      <button onclick="showConfirmation('필수기초단어')">필수기초단어</button>
+      <button onclick="startCustomQuiz()">사용자 지정 문제 풀기</button>
+    </div>
+
+    <!-- 난이도 선택 확인 팝업 창 -->
+    <div class="confirmation-container" id="confirmationContainer">
+      <p id="confirmationMessage" class="confirmation-message"></p>
+      <div class="button-container">
+        <button onclick="confirmSelection(true)">예</button>
+        <button onclick="confirmSelection(false)">아니요</button>
+      </div>
+    </div>
+
+    <!-- 문제 수 입력 확인 팝업 창 -->
+    <div
+      class="confirmation-container"
+      id="questionCountContainer"
+      style="display: none"
+    >
+      <p id="questionCountMessage">몇 개의 문제를 푸시겠습니까?</p>
+      <p id="difficultyInfo"></p>
+      <div id="questionCountInputContainer">
+        <label for="questionCountInput">문제 수: </label>
+        <input type="number" id="questionCountInput" min="1" />
+      </div>
+      <div id="showPronunciationSet">
+        <input type="checkbox" id="showPronunciation" />
+        <label for="showPronunciation">발음 기호 표시</label>
+      </div>
+      <div class="button-container">
+        <button onclick="confirmQuestionCount()">확인</button>
+        <button onclick="cancelQuestionCount()">취소</button>
+      </div>
+    </div>
+
+    <!-- 사용자 지정 문제 확인 팝업 창 -->
+    <div class="confirmation-container" id="customQuizConfirmationContainer">
+      <p id="customQuizConfirmationMessage"></p>
+      <div class="button-container">
+        <button onclick="handleCustomQuizConfirmation(true)">예</button>
+        <button onclick="handleCustomQuizConfirmation(false)">아니오</button>
+      </div>
+    </div>
+
+    <!-- 문제 수 입력 확인 팝업 창 -->
+    <div class="confirmation-container" id="customQuestionCountContainer">
+      <!-- 난이도 선택 컨테이너 -->
+      <div id="difficultySelectionContainer">
+        <p>난이도를 선택하세요</p>
+        <div id="difficultyCheckboxContainer">
+          <div>
+            <input
+              type="checkbox"
+              id="JLPT N1"
+              name="difficulty"
+              value="JLPT N1"
+            />
+            <label for="JLPT N1">JLPT N1</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="JLPT N2"
+              name="difficulty"
+              value="JLPT N2"
+            />
+            <label for="JLPT N2">JLPT N2</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="JLPT N3"
+              name="difficulty"
+              value="JLPT N3"
+            />
+            <label for="JLPT N3">JLPT N3</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="JLPT N4"
+              name="difficulty"
+              value="JLPT N4"
+            />
+            <label for="JLPT N4">JLPT N4</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="JLPT N5"
+              name="difficulty"
+              value="JLPT N5"
+            />
+            <label for="JLPT N5">JLPT N5</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="필수기초단어"
+              name="difficulty"
+              value="필수기초단어"
+            />
+            <label for="필수기초단어">필수 기초 단어</label>
+          </div>
+        </div>
+      </div>
+      <p id="customDifficultyInfo"></p>
+      <!-- 선택된 난이도 정보 및 전체 문제 수 표시 -->
+      <div id="customQuestionCountInputContainer">
+        <label for="customQuestionCountInput">문제 수: </label>
+        <input type="number" id="customQuestionCountInput" min="1" />
+      </div>
+      <div id="showPronunciationSet">
+        <input type="checkbox" id="customshowPronunciation" />
+        <label for="customshowPronunciation">발음 기호 표시</label>
+      </div>
+      <div>
+        <br />
+        <input
+          type="radio"
+          id="customQuestionOption1"
+          name="customQuestionMode"
+          value="byDifficulty"
+        />
+        <label for="customQuestionOption1">선택한 난이도별로 지정된 개수</label
+        ><br />
+        <input
+          type="radio"
+          id="customQuestionOption2"
+          name="customQuestionMode"
+          value="totalRandom"
+          checked
+        />
+        <label for="customQuestionOption2"
+          >선택한 모든 난이도에서 총 지정된 개수</label
+        ><br />
+      </div>
+      <div class="button-container">
+        <button onclick="confirmCustomQuestionCount()">확인</button>
+        <button onclick="cancelCustomQuestionCount()">취소</button>
+      </div>
+    </div>
+
+    <!-- 문제 푸는 중 화면 요소 -->
+    <div class="question-container" id="quizContainer">
+      <h2 id="questionText"></h2>
+      <div id="answers"></div>
+      <div class="button-container">
+        <button id="restartButton" onclick="showRestartConfirmation()">
+          처음으로 돌아가기
+        </button>
+        <button id="skipButton" onclick="skipQuestion()">
+          이 문제 건너뛰기
+        </button>
+      </div>
+    </div>
+
+    <!-- 문제 푸는 중 화면 하단 진행 상태 -->
+    <div id="progressContainer">
+      <div id="progressBar"></div>
+      <p id="progressText">문제: N/N</p>
+    </div>
+
+    <!-- 문제 푸는 중 메인 화면으로 나갈 때 -->
+    <div class="confirmation-container" id="restartConfirmationContainer">
+      <p id="restartConfirmationMessage">
+        문제 풀이를 중단하시겠습니까?<br />(※ 현재 진행 사항은 저장되지
+        않습니다.)
+      </p>
+      <div class="button-container">
+        <button onclick="confirmRestart(true)">예</button>
+        <button onclick="confirmRestart(false)">아니요</button>
+      </div>
+    </div>
+
+    <!-- 최종 결과 창 버튼 -->
+    <div class="result-container" id="resultContainer">
+      <h2 id="resultText" style="color: white; text-align: center"></h2>
+      <div id="resultButton">
+        <button onclick="showAnswerSheet()">정오표</button>
+        <button id="downloadCertificateButton" style="display: none">
+          상장 다운로드
+        </button>
+        <button id="restartButton" onclick="showExitConfirmation()">
+          처음으로 돌아가기
+        </button>
+      </div>
+    </div>
+
+    <!-- 종료 확인 팝업 창 -->
+    <div id="exitConfirmationContainer" class="confirmation-container">
+      <p id="exitConfirmationMessage">
+        메인 화면으로 이동하시겠습니까?<br />(※ 모든 정보는 저장되지 않습니다.)
+      </p>
+      <div class="button-container">
+        <button onclick="confirmExit(true)">예</button>
+        <button onclick="confirmExit(false)">아니요</button>
+      </div>
+    </div>
+
+    <!-- JavaScript library for parsing CSV files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <script src="script.js"></script>
+  </body>
+</html>

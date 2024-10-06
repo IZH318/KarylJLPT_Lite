@@ -1,0 +1,1061 @@
+/* 구글 폰트 사용을 위한 기본 설정 */
+@import url("https://fonts.googleapis.com/css2?family=Allison&family=Noto+Sans+KR&family=Noto+Serif+KR&display=swap");
+
+/* 웹 페이지 전반에 적용되는 기본 스타일 설정 */
+body {
+  margin: 0;
+  background-color: #f0f0f0;
+  background-image: url("./asm_bg_waifu2x_art_noise2_scale_tinypng.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Noto Sans KR", Arial;
+}
+
+/* Confetti.js 전용 캔버스 */
+#Confetti_Canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 30;
+}
+
+/* 로딩 화면 요소 */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(34, 30, 53, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9990;
+  opacity: 1; /* 초기 상태에서 불투명 */
+  transition: opacity 0.5s ease; /* 서서히 변하도록 설정 */
+}
+
+#loading-screen.hidden {
+  opacity: 0; /* 숨길 때 투명하게 만듦 */
+  pointer-events: none; /* 클릭 이벤트를 막음 */
+}
+
+#loading-image {
+  width: auto; /* 비율 유지 */
+  height: auto; /* 비율 유지 */
+}
+
+#loading-screen p {
+  color: white;
+  font-size: 24px; /* 글자 크기 조정 */
+}
+
+/* 메인 메뉴 좌 하단 이미지 */
+.partner-image-container {
+  position: absolute;
+  left: -5vw; /* 화면의 왼쪽에서 10% 만큼 벗어나게 배치 */
+  bottom: -2.5vh; /* 화면의 아래쪽에서 10% 만큼 벗어나게 배치 */
+  width: 50vw; /* 화면 너비의 50%로 설정 */
+  height: auto;
+  max-height: 80vh; /* 화면 높이의 80%로 제한 */
+  overflow: hidden;
+  z-index: 20; /* 이미지 레이어의 우선순위 설정 */
+  pointer-events: none; /* 마우스 이벤트 비활성화 */
+}
+
+.partner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 컨테이너를 가득 채우도록 설정 */
+  pointer-events: none; /* 마우스 이벤트 비활성화 */
+}
+
+/* 칠판 이미지 */
+#chalkboardImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 80vh; /* 높이에 비례하여 설정 */
+  width: 70vw; /* 기본적으로 비율에 맞춰 너비 자동 조정 */
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 메인 메뉴 */
+#menu {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 메인 메뉴 버튼 및 다른 UI 요소의 레이어 우선순위 */
+.container,
+#menu,
+#quizContainer,
+#resultContainer,
+#progressContainer,
+#customQuizConfirmationContainer {
+  position: relative;
+  z-index: 40;
+}
+
+/* 결과 및 확인 컨테이너 기본값 */
+.result-container {
+  display: none;
+  flex-direction: column; /* 세로 정렬 */
+  align-items: center; /* 수평 가운데 정렬 */
+  justify-content: center; /* 세로 가운데 정렬 */
+}
+.confirmation-container,
+#restartConfirmationContainer {
+  display: none;
+}
+
+/* 기본 버튼 */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  transition: all 0.12s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 40; /* 버튼의 레이어 우선순위 설정 */
+}
+
+/* 기본 버튼 호버 */
+button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 기본 버튼 클릭 */
+button:active {
+  background-color: #004494;
+  transform: scale(0.98);
+}
+
+/* 팝업창 표시 애니메이션 키프레임*/
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 팝업 창 컨테이너 */
+.confirmation-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  padding: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s ease;
+}
+
+/* 팝업창 컨테이너 (화면에 나타날 때 적용되는 스타일) */
+.confirmation-container.show {
+  text-align: center;
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 40;
+  animation: bounceIn 0.12s ease;
+}
+
+/* 팝업 창 글자 */
+.confirmation-message {
+  text-align: center;
+  margin-bottom: 20px; /* 버튼과 메시지 사이에 여백 추가 */
+}
+
+/* 발음 기호 표시 체크박스 */
+#showPronunciationSet {
+  text-align: center;
+}
+
+/* 난이도 선택 확인 팝업 창 컨테이너 */
+#questionCountContainer {
+  display: flex;
+  margin-top: 20px;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 문제 수 설정 안내 글자 */
+#questionCountMessage {
+  text-align: center;
+}
+
+/* 난이도, 문제 수 안내 글자 */
+#difficultyInfo {
+  text-align: center;
+}
+
+/* 문제 수 요소 정렬 */
+#questionCountInputContainer {
+  text-align: center;
+}
+
+/* 문제 수 입력 텍스트 박스 */
+#questionCountInput {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  width: 100px;
+  text-align: center;
+}
+
+/* 사용자 지정 문제 확인 팝업 창 컨테이너 */
+#customQuizConfirmationContainer {
+  text-align: center;
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+/* 사용자 지정 문제 확인 팝업 창 (화면에 나타날 때 적용되는 스타일) */
+#customQuizConfirmationContainer.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: bounceIn 0.12s ease;
+}
+
+/* 사용자 지정 문제 설정 팝업 창 컨테이너 */
+#customQuestionCountInputContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* 사용자 지정 문제 난이도 선택 안내 글자 */
+#difficultySelectionContainer p {
+  text-align: center;
+}
+
+/* 사용자 지정 문제 수 안내 글자 */
+#customDifficultyInfo {
+  text-align: center;
+}
+
+/* 사용자 지정 문제 설정 텍스트 박스 */
+#customQuestionCountInput {
+  padding: 10px;
+  font-size: 16px;
+  width: 100px;
+  text-align: center;
+}
+
+/* 사용자 지정 문제 풀기 버튼 */
+#customQuizButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  transition: all 0.12s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 40;
+}
+
+#customQuizButton:hover {
+  background-color: #0056b3;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+#customQuizButton:active {
+  background-color: #004494;
+  transform: scale(0.98);
+}
+
+/* 퀴즈 컨테이너 */
+#quizContainer {
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  display: none;
+  font-size: 30px;
+  max-width: 60vw;
+}
+
+/* 퀴즈 문제 텍스트 */
+#questionText {
+  color: white;
+  grid-column: 1 / 3;
+  text-align: center;
+  margin: 0px;
+}
+
+/* 퀴즈 문제 텍스트 (발음) */
+.questionPronunciation {
+  font-size: 20px;
+}
+
+/* 퀴즈 문제 컨테이너 */
+.question-container {
+  position: absolute;
+  top: calc(50% - 55%);
+  z-index: 40;
+}
+
+/* 답변 요소 */
+#answers {
+  display: grid;
+  grid-column: 1 / 3;
+  grid-template-columns: 1fr; /* 가로 1칸으로 설정 */
+  gap: 10px;
+}
+
+/* 답변 버튼 컨테이너 */
+.button-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  grid-column: 1 / 3;
+  flex-direction: column;
+}
+
+/* 처음으로 돌아가기 버튼 */
+#restartButton {
+  background-color: #28a745; /* 기본 버튼 스타일 */
+}
+
+#restartButton:hover {
+  background-color: #218838; /* 버튼 호버 시 색상 */
+}
+
+#restartButton:active {
+  background-color: #1e7e34; /* 버튼 클릭 시 색상 */
+}
+
+/* 이 문제 건너뛰기 버튼 스타일 */
+#skipButton {
+  background-color: #d84315;
+}
+
+#skipButton:hover {
+  background-color: #d81e00;
+}
+
+#skipButton:active {
+  background-color: #d80900;
+}
+
+/* 진행 상태 막대 그래프 */
+#progressContainer {
+  display: none; /* 기본적으로 숨기기 */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#progressBar {
+  width: 100%;
+  height: 10px;
+  background-color: #28a745;
+  margin-bottom: 5px;
+  position: relative;
+  transition: width 0.12s ease;
+}
+
+#progressBar::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background-color: #007bff;
+  width: 0%; /* 기본값은 0%로 설정 */
+  transition: width 0.12s ease;
+}
+
+#progressText {
+  font-size: 16px;
+  color: #333;
+}
+
+/* 결과 화면 컨테이너 */
+#resultButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* 결과 화면 버튼 */
+#resultButton button {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* 정오표 컨테이너 */
+.answer-sheet-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 80vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s ease;
+}
+
+/* 정오표 컨테이너 (화면에 나타날 때 적용되는 스타일) */
+.answer-sheet-container.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: bounceIn 0.12s ease;
+}
+
+/* 정오표 내용 표시 */
+.answer-sheet {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 정오표 발음 버튼*/
+.pronunciation-button {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+
+/* 오답 항목 강조 체크박스 컨테이너 */
+.checkbox-container {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+/* TTS 모델 선택 컨테이너 */
+.ttsModelSelect-container {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+/* 오답 항목 강조 */
+.highlight-mistake {
+  background-color: var(--highlight-color);
+}
+
+/* 정오표 버튼 */
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* 정오표 버튼 간 스타일 */
+.button-container button {
+  margin-right: 10px;
+}
+
+/* 화면 너비가 줄어들 때 (테블릿) */
+@media screen and (max-width: 1024px) {
+  /* 로딩 화면 */
+  /* 로딩 이미지 */
+  #loading-image {
+    width: 30vw;
+    height: 30vw;
+  }
+
+  /* 로딩 안내 문구 */
+  #loading-screen p {
+    font-size: 15px;
+  }
+
+  /* 칠판 이미지 */
+  #chalkboardImage {
+    width: 90%; /* 화면의 90%를 차지하도록 설정 */
+  }
+
+  /* 메인 메뉴*/
+  /* 메인 메뉴 상단 */
+  #menu h1 {
+    text-align: center;
+    font-size: 21px;
+  }
+
+  /* 메인 메뉴 버튼 */
+  #menu button {
+    font-size: 15px;
+  }
+
+  /* 답변 버튼 */
+  .button-container button {
+    font-size: 15px;
+    gap: 0px;
+  }
+
+  /* 팝업 창 */
+  /* 팝업 창 컨테이너 */
+  .confirmation-container {
+    width: 60vw;
+    padding: 10px;
+  }
+
+  /* 팝업 창 글자 */
+  .confirmation-message {
+    text-align: center;
+    margin-bottom: 0px;
+  }
+
+  /* 난이도 확인 팝업 창 */
+  #confirmationMessage {
+    font-size: 15px;
+  }
+
+  /* 난이도 확인 팝업 창 버튼 */
+  .confirmation-container button {
+    font-size: 15px;
+  }
+
+  /* 문제 수 설정 안내 글자 */
+  #questionCountMessage {
+    font-size: 15px;
+  }
+
+  /* 난이도, 문제 수 안내 글자 */
+  #difficultyInfo {
+    font-size: 15px;
+  }
+
+  /* 문제 수 입력 안내 텍스트 박스 */
+  label[for="questionCountInput"] {
+    font-size: 15px;
+  }
+
+  /* 문제 수 입력 텍스트 박스 */
+  #questionCountInput {
+    padding: 4px;
+    font-size: 15px;
+  }
+
+  /* 발음 기호 표시 체크박스 글자 */
+  label[for="showPronunciation"] {
+    font-size: 15px;
+  }
+
+  /* 사용자 지정 팝업 창 */
+  /* 사용자 지정 문제 확인 팝업 창 */
+  #customQuizConfirmationContainer {
+    width: 60vw;
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  /* 사용자 지정 문제 확인 팝업 창 버튼 */
+  #customQuizConfirmationContainer button {
+    font-size: 15px;
+  }
+
+  /* 사용자 지정 문제 난이도 선택 안내 글자 */
+  #difficultySelectionContainer p {
+    font-size: 18px;
+  }
+
+  /* 사용자 지정 문제 난이도 체크박스 글자 */
+  #difficultyCheckboxContainer label {
+    font-size: 18px;
+  }
+
+  /* 사용자 지정 문제 수 안내 글자 */
+  #customDifficultyInfo {
+    font-size: 18px;
+  }
+
+  /* 사용자 지정 문제 문제 수 입력 안내 글자 */
+  #customQuestionCountInputContainer label {
+    font-size: 15px;
+  }
+
+  /* 사용자 지정 문제 설정 텍스트 박스 */
+  #customQuestionCountInput {
+    padding: 4px;
+    font-size: 15px;
+  }
+
+  /* 사용자 지정 팝업 창 특정 <label> 글자 크기 */
+  label[for="customshowPronunciation"],
+  label[for="customQuestionOption1"],
+  label[for="customQuestionOption2"] {
+    font-size: 15px;
+  }
+
+  /* 문제 푸는 중 화면 */
+  /* 퀴즈 컨테이너 */
+  #quizContainer {
+    gap: 0px;
+    max-width: 60vw;
+  }
+
+  /* 퀴즈 문제 텍스트 */
+  #questionText {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+
+  /* 퀴즈 문제 텍스트 (발음) */
+  .questionPronunciation {
+    font-size: 14px;
+  }
+
+  /* 퀴즈 버튼 설정 */
+  #quizContainer .button-container {
+    display: flex; /* Flexbox를 활성화 */
+    flex-direction: column; /* 버튼을 세로로 배치 */
+    margin: 0;
+  }
+
+  #restartButton {
+    order: 2; /* '처음으로 돌아가기' 버튼을 두 번째로 이동 */
+  }
+
+  #skipButton {
+    order: 1; /* '이 문제 건너뛰기' 버튼을 첫 번째로 이동 */
+  }
+
+  /* 답변 버튼 */
+  #answers {
+    width: 60vw;
+    margin-bottom: 10px;
+  }
+
+  .answer-button {
+    font-size: 15px;
+    margin: 6px;
+    padding: 6px;
+  }
+
+  /* 하단 버튼 */
+  #restartButton,
+  #skipButton {
+    font-size: 15px;
+    margin: 6px;
+    padding: 6px;
+  }
+
+  /* 처음으로 돌아가기 글자 */
+  #restartConfirmationMessage {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  /* 진행 상태 막대 그래프 */
+  #progressContainer {
+    padding: 6px;
+  }
+
+  #progressBar {
+    height: 6px;
+  }
+
+  #progressText {
+    font-size: 15px;
+  }
+
+  /* 결과 창 점수 글자 */
+  #resultText {
+    font-size: 21px;
+  }
+
+  /* 결과창에서 처음으로 돌아가기 안내 글자 */
+  #resultButton button {
+    text-align: center;
+    font-size: 15px;
+    margin: 10px;
+    padding: 10px;
+  }
+
+  /* 정오표 컨테이너 */
+  #printable-content {
+    padding: 10px 10px 10px 10px !important;
+  }
+
+  table {
+    width: 100%; /* 너비를 100%로 설정 */
+    font-size: 12px; /* 모바일에서 글꼴 크기 조정 */
+  }
+
+  th,
+  td {
+    font-size: 12px; /* 모바일에서 글꼴 크기 조정 */
+    padding: 4px !important; /* 패딩 조정 */
+  }
+
+  h2 {
+    font-size: 18px; /* 제목 크기 조정 */
+  }
+
+  /* 정오표 발음 버튼*/
+  .pronunciation-button {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 정오표 컨테이너 */
+  .answer-sheet-container.show {
+    display: flex;
+    padding: 10px;
+  }
+
+  /* 오답 항목 강조 체크박스 컨테이너 */
+  .checkbox-container {
+    margin-left: 10px;
+    font-size: 15px;
+  }
+
+  /* TTS 모델 선택 컨테이너 */
+  .ttsModelSelect-container {
+    margin-left: 10px;
+    font-size: 15px;
+  }
+
+  /* 팝업창 컨테이너 (화면에 나타날 때 적용되는 스타일) */
+  .confirmation-container.show {
+    font-size: 15px;
+  }
+}
+
+/* 화면 너비가 줄어들 때 (스마트폰) */
+@media screen and (max-width: 480px) {
+  /* 로딩 화면 */
+  /* 로딩 이미지 */
+  #loading-image {
+    width: 30vw;
+    height: 30vw;
+  }
+
+  /* 로딩 안내 문구 */
+  #loading-screen p {
+    font-size: 12px;
+  }
+
+  /* 칠판 이미지 */
+  #chalkboardImage {
+    width: 90%; /* 화면의 90%를 차지하도록 설정 */
+  }
+
+  /* 메인 메뉴*/
+  /* 메인 메뉴 상단 */
+  #menu h1 {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  /* 메인 메뉴 버튼 */
+  #menu button {
+    font-size: 12px;
+  }
+
+  /* 답변 버튼 */
+  .button-container button {
+    font-size: 12px;
+    gap: 0px;
+  }
+
+  /* 팝업 창 */
+  /* 팝업 창 컨테이너 */
+  .confirmation-container {
+    width: 60vw;
+    padding: 10px;
+  }
+
+  /* 팝업 창 글자 */
+  .confirmation-message {
+    text-align: center;
+    margin-bottom: 0px;
+  }
+
+  /* 난이도 확인 팝업 창 */
+  #confirmationMessage {
+    font-size: 12px;
+  }
+
+  /* 난이도 확인 팝업 창 버튼 */
+  .confirmation-container button {
+    font-size: 12px;
+  }
+
+  /* 문제 수 설정 안내 글자 */
+  #questionCountMessage {
+    font-size: 12px;
+  }
+
+  /* 난이도, 문제 수 안내 글자 */
+  #difficultyInfo {
+    font-size: 12px;
+  }
+
+  /* 문제 수 입력 안내 텍스트 박스 */
+  label[for="questionCountInput"] {
+    font-size: 12px;
+  }
+
+  /* 문제 수 입력 텍스트 박스 */
+  #questionCountInput {
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  /* 발음 기호 표시 체크박스 글자 */
+  label[for="showPronunciation"] {
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 팝업 창 */
+  /* 사용자 지정 문제 확인 팝업 창 */
+  #customQuizConfirmationContainer {
+    width: 60vw;
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 문제 확인 팝업 창 버튼 */
+  #customQuizConfirmationContainer button {
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 문제 난이도 선택 안내 글자 */
+  #difficultySelectionContainer p {
+    font-size: 15px;
+  }
+
+  /* 사용자 지정 문제 난이도 체크박스 글자 */
+  #difficultyCheckboxContainer label {
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 문제 수 안내 글자 */
+  #customDifficultyInfo {
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 문제 문제 수 입력 안내 글자 */
+  #customQuestionCountInputContainer label {
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 문제 설정 텍스트 박스 */
+  #customQuestionCountInput {
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  /* 사용자 지정 팝업 창 특정 <label> 글자 크기 */
+  label[for="customshowPronunciation"],
+  label[for="customQuestionOption1"],
+  label[for="customQuestionOption2"] {
+    font-size: 12px;
+  }
+
+  /* 문제 푸는 중 화면 */
+  /* 퀴즈 컨테이너 */
+  #quizContainer {
+    gap: 0px;
+    max-width: 60vw;
+  }
+
+  /* 퀴즈 문제 텍스트 */
+  #questionText {
+    font-size: 21px;
+    margin-bottom: 6px;
+  }
+
+  /* 퀴즈 문제 텍스트 (발음) */
+  .questionPronunciation {
+    font-size: 10px;
+  }
+
+  /* 퀴즈 버튼 설정 */
+  #quizContainer .button-container {
+    display: flex; /* Flexbox를 활성화 */
+    flex-direction: column; /* 버튼을 세로로 배치 */
+    margin: 0;
+  }
+
+  #restartButton {
+    order: 2; /* '처음으로 돌아가기' 버튼을 두 번째로 이동 */
+  }
+
+  #skipButton {
+    order: 1; /* '이 문제 건너뛰기' 버튼을 첫 번째로 이동 */
+  }
+
+  /* 답변 버튼 */
+  #answers {
+    width: 60vw;
+    margin-bottom: 10px;
+  }
+
+  .answer-button {
+    font-size: 12px;
+    margin: 6px;
+    padding: 6px;
+  }
+
+  /* 하단 버튼 */
+  #restartButton,
+  #skipButton {
+    font-size: 12px;
+    margin: 6px;
+    padding: 6px;
+  }
+
+  /* 처음으로 돌아가기 글자 */
+  #restartConfirmationMessage {
+    font-size: 12px;
+    text-align: center;
+  }
+
+  /* 진행 상태 막대 그래프 */
+  #progressContainer {
+    padding: 6px;
+  }
+
+  #progressBar {
+    height: 6px;
+  }
+
+  #progressText {
+    font-size: 12px;
+  }
+
+  /* 결과 창 점수 글자 */
+  #resultText {
+    font-size: 18px;
+  }
+
+  /* 결과창에서 처음으로 돌아가기 안내 글자 */
+  #resultButton button {
+    text-align: center;
+    font-size: 12px;
+    margin: 10px;
+    padding: 10px;
+  }
+
+  /* 정오표 컨테이너 */
+  #printable-content {
+    padding: 10px 10px 10px 10px !important;
+  }
+
+  table {
+    width: 100%; /* 너비를 100%로 설정 */
+    font-size: 10px; /* 모바일에서 글꼴 크기 조정 */
+  }
+
+  th,
+  td {
+    font-size: 10px; /* 모바일에서 글꼴 크기 조정 */
+    padding: 4px !important; /* 패딩 조정 */
+  }
+
+  h2 {
+    font-size: 15px; /* 제목 크기 조정 */
+  }
+
+  /* 정오표 발음 버튼*/
+  .pronunciation-button {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 정오표 컨테이너 */
+  .answer-sheet-container.show {
+    display: flex;
+    padding: 10px;
+  }
+
+  /* 오답 항목 강조 체크박스 컨테이너 */
+  .checkbox-container {
+    margin-left: 10px;
+    font-size: 12px;
+  }
+
+  /* TTS 모델 선택 컨테이너 */
+  .ttsModelSelect-container {
+    margin-left: 10px;
+    font-size: 12px;
+  }
+
+  /* 팝업창 컨테이너 (화면에 나타날 때 적용되는 스타일) */
+  .confirmation-container.show {
+    font-size: 12px;
+  }
+}
+
+/* 기본 폰트 */
+.noto-sans-kr {
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 상장 다운로드 - 난이도 정보, 이름 */
+.allison-regular {
+  font-family: "Allison", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 상장 다운로드 - 날짜 */
+.noto-serif-kr {
+  font-family: "Noto Serif KR", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
